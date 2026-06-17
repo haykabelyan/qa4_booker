@@ -36,8 +36,8 @@ jobs:
           - '@get'
           - '@posts'
     steps:
-    - uses: actions/checkout@v5
-    - uses: actions/setup-node@v5
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version: lts/*
     - name: Install dependencies
@@ -46,9 +46,14 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test --grep "${{ matrix.tag }}"
+    - name: Set artifact name
+      if: ${{ !cancelled() }}
+      run: |
+        TAG_CLEAN=$(echo "${{ matrix.tag }}" | tr -d '@')
+        echo "ARTIFACT_NAME=playwright-report-${TAG_CLEAN}" >> $GITHUB_ENV
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report-${{ matrix.tag }}
+        name: ${{ env.ARTIFACT_NAME }}
         path: playwright-report/
         retention-days: 30

@@ -1,9 +1,16 @@
 name: Playwright Tests
+
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
+
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
+
   workflow_dispatch:
     inputs:
       tag:
@@ -21,39 +28,53 @@ on:
 jobs:
   test:
     name: test (${{ matrix.tag }})
-    timeout-minutes: 60
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    # Запускаем матрицу целиком при push/PR,
+    # при ручном запуске — только выбранный тег (или все, если 'all')
     if: >-
       github.event_name != 'workflow_dispatch'
       || github.event.inputs.tag == 'all'
       || github.event.inputs.tag == matrix.tag
+
     strategy:
       fail-fast: false
       matrix:
         tag:
-          - '@booker'
-          - '@auth'
-          - '@get'
-          - '@posts'
+          - "@booker"
+          - "@auth"
+          - "@get"
+          - "@posts"
+
     steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-node@v6
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test --grep "${{ matrix.tag }}"
-    - name: Set artifact name
-      if: ${{ !cancelled() }}
-      run: |
-        TAG_CLEAN=$(echo "${{ matrix.tag }}" | tr -d '@')
-        echo "ARTIFACT_NAME=playwright-report-${TAG_CLEAN}" >> $GITHUB_ENV
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: ${{ env.ARTIFACT_NAME }}
-        path: playwright-report/
-        retention-days: 30
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: npx playwright test --grep "${{ matrix.tag }}"
+
+      - name: Prepare artifact name
+        if: ${{ !cancelled() }}
+        run: |
+          TAG_CLEAN=$(echo "${{ matrix.tag }}" | tr -d '@')
+          echo "ARTIFACT_NAME=playwright-report-${TAG_CLEAN}" >> $GITHUB_ENV
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: playwright-report/
+          retention-days: 30

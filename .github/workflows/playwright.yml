@@ -29,41 +29,51 @@ jobs:
 
     steps:
       - name: Checkout repository
+        # Загружает код репозитория в runner, чтобы workflow мог запускать тесты.
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        # Устанавливает Node.js и включает кеш npm для ускорения следующих запусков.
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
       - name: Install dependencies
+        # Устанавливает зависимости строго по package-lock.json.
         run: npm ci
 
       - name: Install Playwright browsers
+        # Устанавливает браузеры Playwright и системные зависимости для Linux.
         run: npx playwright install --with-deps
 
       - name: Run all Playwright tests
+        # По умолчанию запускает весь набор тестов.
         if: ${{ github.event.inputs.test_tag == '' || github.event.inputs.test_tag == 'all' }}
         run: npx playwright test
 
       - name: Run Playwright tests by @booker
+        # Запускает только тесты, в названии которых есть тег @booker.
         if: ${{ github.event.inputs.test_tag == '@booker' }}
         run: npx playwright test --grep "@booker"
 
       - name: Run Playwright tests by @auth
+        # Запускает только тесты, в названии которых есть тег @auth.
         if: ${{ github.event.inputs.test_tag == '@auth' }}
         run: npx playwright test --grep "@auth"
 
       - name: Run Playwright tests by @get
+        # Запускает только тесты, в названии которых есть тег @get.
         if: ${{ github.event.inputs.test_tag == '@get' }}
         run: npx playwright test --grep "@get"
 
       - name: Run Playwright tests by @posts
+        # Запускает только тесты, в названии которых есть тег @posts.
         if: ${{ github.event.inputs.test_tag == '@posts' }}
         run: npx playwright test --grep "@posts"
 
       - name: Upload Playwright report
+        # Сохраняет HTML-отчет даже если тесты упали.
         if: always()
         uses: actions/upload-artifact@v4
         with:

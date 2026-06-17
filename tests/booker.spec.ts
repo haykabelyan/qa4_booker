@@ -59,7 +59,7 @@ test.describe('Booking API', { tag: ['@booker', '@api'] }, () => {
   });
 
 
-  // test('GET /booking/{id}', { tag: '@get' }, async ({ request }) => {
+  test('GET /booking/{id}', { tag: '@get' }, async ({ request }) => {
   //   let responseBody: {
   //     firstname: string;
   //     lastname: string;
@@ -91,7 +91,7 @@ test.describe('Booking API', { tag: ['@booker', '@api'] }, () => {
   //       expect(responseBody.additionalneeds.length).toBeGreaterThan(0);
   //     }
   //   });
-  // });
+  });
 
 
   test('POST /booking', { tag: '@post' }, async ({ request }) => {
@@ -132,6 +132,7 @@ test.describe('Booking API', { tag: ['@booker', '@api'] }, () => {
 
   test('PUT /booking/{id}', { tag: ['@auth', '@put'] }, async ({ request }) => {
     let authToken: string;
+    let bookingId: number;
 
     const updatedBooking = {
       firstname: 'James',
@@ -164,8 +165,28 @@ test.describe('Booking API', { tag: ['@booker', '@api'] }, () => {
       authToken = authResponseBody.token;
     });
 
+    await test.step('Создание бронирования для обновления', async () => {
+      const createResponse = await request.post(`${BASE_URL}/booking`, {
+        headers: { 'Content-Type': 'application/json' },
+        data: {
+          firstname: 'John',
+          lastname: 'Doe',
+          totalprice: 50,
+          depositpaid: false,
+          bookingdates: {
+            checkin: '2026-03-01',
+            checkout: '2026-03-05',
+          },
+        },
+      });
+
+      expect(createResponse.ok()).toBeTruthy();
+      const createResponseBody = await createResponse.json();
+      bookingId = createResponseBody.bookingid;
+    });
+
     await test.step('Полное обновление бронирования', async () => {
-      const response = await request.put(`${BASE_URL}/booking/1`, {
+      const response = await request.put(`${BASE_URL}/booking/${bookingId}`, {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
@@ -195,6 +216,7 @@ test.describe('Booking API', { tag: ['@booker', '@api'] }, () => {
 
   test('PATCH /booking/{id}', { tag: ['@auth', '@patch'] }, async ({ request }) => {
     let authToken: string;
+    let bookingId: number;
 
     const partialUpdate = {
       firstname: 'James',
@@ -220,8 +242,28 @@ test.describe('Booking API', { tag: ['@booker', '@api'] }, () => {
       authToken = authResponseBody.token;
     });
 
+    await test.step('Создание бронирования для частичного обновления', async () => {
+      const createResponse = await request.post(`${BASE_URL}/booking`, {
+        headers: { 'Content-Type': 'application/json' },
+        data: {
+          firstname: 'Anna',
+          lastname: 'Smith',
+          totalprice: 75,
+          depositpaid: true,
+          bookingdates: {
+            checkin: '2026-04-01',
+            checkout: '2026-04-07',
+          },
+        },
+      });
+
+      expect(createResponse.ok()).toBeTruthy();
+      const createResponseBody = await createResponse.json();
+      bookingId = createResponseBody.bookingid;
+    });
+
     await test.step('Частичное обновление бронирования', async () => {
-      const response = await request.patch(`${BASE_URL}/booking/1`, {
+      const response = await request.patch(`${BASE_URL}/booking/${bookingId}`, {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',

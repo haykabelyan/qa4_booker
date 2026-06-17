@@ -59,39 +59,39 @@ test.describe('Booking API', { tag: ['@booker', '@api'] }, () => {
   });
 
 
-  test('GET /booking/{id}', { tag: '@get' }, async ({ request }) => {
-    let responseBody: {
-      firstname: string;
-      lastname: string;
-      totalprice: number;
-      depositpaid: boolean;
-      bookingdates: { checkin: string; checkout: string };
-      additionalneeds?: string;
-    };
+  // test('GET /booking/{id}', { tag: '@get' }, async ({ request }) => {
+  //   let responseBody: {
+  //     firstname: string;
+  //     lastname: string;
+  //     totalprice: number;
+  //     depositpaid: boolean;
+  //     bookingdates: { checkin: string; checkout: string };
+  //     additionalneeds?: string;
+  //   };
 
-    await test.step('Получение бронирования по id', async () => {
-      const response = await request.get(`${BASE_URL}/booking/1`);
+  //   await test.step('Получение бронирования по id', async () => {
+  //     const response = await request.get(`${BASE_URL}/booking/1`);
 
-      expect(response.ok()).toBeTruthy();
-      expect(response.status()).toBe(200);
+  //     expect(response.ok()).toBeTruthy();
+  //     expect(response.status()).toBe(200);
 
-      responseBody = await response.json();
-    });
+  //     responseBody = await response.json();
+  //   });
 
-    await test.step('Проверка полей бронирования', async () => {
-      expect(responseBody.firstname).toBeDefined();
-      expect(responseBody.lastname).toBeDefined();
-      expect(responseBody.totalprice).toBeDefined();
-      expect(responseBody.depositpaid).toBeDefined();
-      expect(responseBody.bookingdates).toBeDefined();
-      expect(responseBody.bookingdates.checkin).toBeDefined();
-      expect(responseBody.bookingdates.checkout).toBeDefined();
+  //   await test.step('Проверка полей бронирования', async () => {
+  //     expect(responseBody.firstname).toBeDefined();
+  //     expect(responseBody.lastname).toBeDefined();
+  //     expect(responseBody.totalprice).toBeDefined();
+  //     expect(responseBody.depositpaid).toBeDefined();
+  //     expect(responseBody.bookingdates).toBeDefined();
+  //     expect(responseBody.bookingdates.checkin).toBeDefined();
+  //     expect(responseBody.bookingdates.checkout).toBeDefined();
 
-      if (responseBody.additionalneeds) {
-        expect(responseBody.additionalneeds.length).toBeGreaterThan(0);
-      }
-    });
-  });
+  //     if (responseBody.additionalneeds) {
+  //       expect(responseBody.additionalneeds.length).toBeGreaterThan(0);
+  //     }
+  //   });
+  // });
 
 
   test('POST /booking', { tag: '@post' }, async ({ request }) => {

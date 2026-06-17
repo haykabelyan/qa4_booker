@@ -307,8 +307,3 @@ test.describe('Booking API', { tag: ['@booker', '@api'] }, () => {
 
 });
 
-
-// npx playwright test --grep "@booker"
-// npx playwright test --grep "@auth"
-// npx playwright test --grep "@get"
-// npx playwright test --grep "@posts"

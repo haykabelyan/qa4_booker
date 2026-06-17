@@ -47,9 +47,21 @@ jobs:
         if: ${{ github.event.inputs.test_tag == '' || github.event.inputs.test_tag == 'all' }}
         run: npx playwright test
 
-      - name: Run Playwright tests by tag
-        if: ${{ github.event.inputs.test_tag != '' && github.event.inputs.test_tag != 'all' }}
-        run: npx playwright test --grep "${{ github.event.inputs.test_tag }}"
+      - name: Run Playwright tests by @booker
+        if: ${{ github.event.inputs.test_tag == '@booker' }}
+        run: npx playwright test --grep "@booker"
+
+      - name: Run Playwright tests by @auth
+        if: ${{ github.event.inputs.test_tag == '@auth' }}
+        run: npx playwright test --grep "@auth"
+
+      - name: Run Playwright tests by @get
+        if: ${{ github.event.inputs.test_tag == '@get' }}
+        run: npx playwright test --grep "@get"
+
+      - name: Run Playwright tests by @posts
+        if: ${{ github.event.inputs.test_tag == '@posts' }}
+        run: npx playwright test --grep "@posts"
 
       - name: Upload Playwright report
         if: always()
